@@ -1,0 +1,119 @@
+.gc_number_spinner
+{
+	height: 28px;
+	box-sizing:content-box;
+	display: inline-block;
+    margin: 0 0 1px;
+    position: relative;
+    vertical-align: top;
+}
+
+.gc_number_spinner .number_show
+{
+	font-size: 12px;
+    border: 1px solid #e8e8e8;
+    color: #333;
+    display: inline;
+    float: left;
+    height: 16px;
+    line-height: 16px;
+    margin-right: 1px;
+    outline: medium none;
+    padding: 5px 38px 5px 3px;
+    text-align: center;
+    width: 40px;
+}
+
+.gc_number_spinner .number_spinner_unit
+{
+	height: 28px;
+    line-height: 30px;
+    box-sizing: content-box;
+    color: #333;
+    font-size: 12px;
+    left: 43px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 40px;
+}
+
+.gc_number_spinner .number_spinner_control
+{
+	height: 28px;
+	box-sizing: content-box;
+	background: #e8e8e8 none repeat scroll 0 0;
+    display: inline;
+    float: left;
+    width: 22px;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_up,.number_spinner_down
+{
+	height: 14px;
+	box-sizing: content-box;
+	background: #e8e8e8 none repeat scroll 0 0;
+    cursor: pointer;
+    display: block;
+    overflow: hidden;
+    transition: all 0.3s ease 0s;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_up .gc-number-arrow
+{	
+	-moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: transparent transparent #999;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px;
+    box-sizing: content-box;
+    display: block;
+    height: 0;
+    margin: 2px 6px 3px;
+    width: 0;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_up:hover .gc-number-arrow
+{
+	border-color: transparent transparent #404040;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_up.number_spinner_change_disable .gc-number-arrow
+{
+	border-color: transparent transparent #b9b9b9;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_down .gc-number-arrow
+{
+	-moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    box-sizing: content-box;
+    border-color: #999 transparent transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 5px;
+    display: block;
+    height: 0;
+    margin: 3px 6px;
+    width: 0;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_down:hover .gc-number-arrow
+{
+	border-color: #404040 transparent transparent;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_down.number_spinner_change_disable .gc-number-arrow
+{
+	border-color: #b9b9b9 transparent transparent;
+}
+
+.gc_number_spinner .number_spinner_control .number_spinner_change_disable
+{
+	cursor: default;
+}
