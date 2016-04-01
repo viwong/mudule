@@ -2,28 +2,35 @@
 
 */
 
-var SWNumSpinner = {
+var VWNumSpinner = {
 		
 	init : function(cfg)
 	{
 		var me = this;
 		
-		var obj = new this.Ob(cfg || {});
-        el.data('_object', obj);
-
-        return obj;
+		var el = this.parseSelector(cfg.id||'');
+        if (!el || el.length < 1)
+        {
+            var obj = new this.Ob(cfg || {});
+        	return obj;
+        }
+        if (el.data('_object'))
+        {
+            debug('error, exists object', el, 'warn', el.data());
+            return el.data('_object');
+        }
 		
 	},
-	getInstance: function(id)
+	getInstance: function(cfg)
     {
-        var el = this.parseSelector(id);
+        var el = this.parseSelector(cfg.id);
         if (el.data('_object'))
         {
             return el.data('_object');
         }
         else
         {
-            return this.init(id, cfg);
+            return this.init(cfg);
         }
     },
     parseSelector: function(s)
@@ -106,17 +113,35 @@ var SWNumSpinner = {
         {
             return;
         }
+    },
+    id: function()
+    {
+    	var id = null;
+    	var prefix = "vw-numspinner-";
+    	if (!VWNumSpinner.idNum) VWNumSpinner.idNum = 1;
+        id = prefix + (VWNumSpinner.idNum++);
+        return id;
     }
 };
 
 
-SWNumSpinner.Ob = function(cfg)
+VWNumSpinner.Ob = function(cfg)
 {
 	var me = this;
-	this.cfg = cfg;
-	
+	this.el = null;
+	this.cfg = cfg || {};
+	if(cfg.containerId){
+		this.container = VWNumSpinner.parseSelector(cfg.containerId);
+	}	
 	//等默认
 	$.extend(this,cfg);
+
+	this.id = cfg.id || VWNumSpinner.id();
+	if(isNaN(cfg.step)){
+		this.step = 1
+	}else{
+		this.step = cfg.step;
+	}
 	
 	this.render();
 	
@@ -128,16 +153,18 @@ SWNumSpinner.Ob = function(cfg)
 
 };
 
-SWNumSpinner.Ob.prototype = {
+VWNumSpinner.Ob.prototype = {
 		
 	initEvent: function(){
+
+			var me = this;
 			//点击+1事件
-		    $(".gc_number_spinner .number_spinner_up").on('click',function(){
+		    $(".vw_number_spinner .number_spinner_up").on('click',function(){
     	
 	    	var e = $(this);    	
 	    	var max = parseInt(e.attr("max"));    	
-	    	var numShow = e.closest('.gc_number_spinner').find(".number_show");    	
-	    	var val = parseInt(numShow.val()) + 1;
+	    	var numShow = e.closest('.vw_number_spinner').find(".number_show");    	
+	    	var val = parseInt(numShow.val()) + me.step;
 	    	var down = e.parent().find(".number_spinner_down");
 	    	
 	    	if(e.hasClass("number_spinner_change_disable")){
@@ -158,12 +185,12 @@ SWNumSpinner.Ob.prototype = {
 	    });
 	    
 	    //点击-1事件
-	    $(".gc_number_spinner .number_spinner_down").on("click",function(){
+	    $(".vw_number_spinner .number_spinner_down").on("click",function(){
 	    	
 	    	var e = $(this);    	
 	    	var min = parseInt(e.attr("min"));    	
-	    	var numShow = e.closest('.gc_number_spinner').find(".number_show");   	
-	    	var val = parseInt(numShow.val()) - 1;
+	    	var numShow = e.closest('.vw_number_spinner').find(".number_show");   	
+	    	var val = parseInt(numShow.val()) - me.step;
 	    	var up = e.parent().find(".number_spinner_up");
 	    	
 	    	if(e.hasClass("number_spinner_change_disable")){
@@ -184,7 +211,7 @@ SWNumSpinner.Ob.prototype = {
 	    });
 	    
 	    //微调器输入框改变事件
-	    $(".gc_number_spinner .number_show").on("change",function(){	    	
+	    $(".vw_number_spinner .number_show").on("change",function(){	    	
 	    	var e = $(this);
 	    	var val = parseInt(e.val(),10);
 	    	var max = parseInt(e.parent().find(".number_spinner_up").attr("max"),10);
@@ -213,11 +240,10 @@ SWNumSpinner.Ob.prototype = {
 	    	
 	    	e.val(val);
 	    	
-	    	gc_publiccloud_buy.countPrice();
 	    });
 	    
 	    //控制微调输入框只能输入数字
-	    $(".gc_number_spinner .number_show").keypress(function(event) {  
+	    $(".vw_number_spinner .number_show").keypress(function(event) {  
 	        var keyCode = event.which;  
 	        if (keyCode == 46 || (keyCode >= 48 && keyCode <=57) || keyCode == 8)//8是删除键  
 	            return true;  
@@ -232,23 +258,24 @@ SWNumSpinner.Ob.prototype = {
 		var me = this;
 		
 		var cfg = this.cfg;
-		var el = $("<div class='gc_number_spinner'><div>");
+		var el = $("<div class='vw_number_spinner'><div>").attr("id",me.id);
+
 		this.el = el;
 		
 		var bodyEl = $("body");
-		var inputEl = $("<input class='number_show'>").attr('value',this.cfg.initVal||this.cfg.min||0).appendTo(el);
-		var unitEl = $("<span class='number_spinner_unit'>"+this.cfg.unit+"</span>").appendTo(el);
+		var inputEl = $("<input class='number_show'>").attr('value',cfg.initVal||cfg.min||0).attr("name",cfg.name).appendTo(el);
+		var unitEl = $("<span class='number_spinner_unit'>"+cfg.unit+"</span>").appendTo(el);
 		
 		var controlEl = $("<div class='number_spinner_control'></div>").appendTo(el);
 		
-		var controlHtml = "<span class='number_spinner_up' max='"+this.cfg.max+"'>"
-						+ "<i class='gc-number-arrow'></i></span>"			
-						+ "<span class='number_spinner_down number_spinner_change_disable' min='"+this.cfg.min+"'>"		
+		var controlHtml = "<span class='number_spinner_up' max='"+cfg.max+"'>"
+						+ "<i class='gc-number-arrow' onselectstart='return false;'></i></span>"			
+						+ "<span class='number_spinner_down number_spinner_change_disable' min='"+cfg.min+"'>"		
 						+ "<i class='gc-number-arrow'></i></span>";
 		
 		controlEl.append(controlHtml);
 		
-		if (this.container)
+		if (this.container && this.container.length > 0)
 	    {
 	        this.container.append(this.el);
 	    }
@@ -264,8 +291,8 @@ SWNumSpinner.Ob.prototype = {
 	            this.el.appendTo(bodyEl);
 	        }
 	    }
-	    
-	    this.el.appendTo(bodyEl);
+
+	    return this;
 
 	}
 };
@@ -275,9 +302,9 @@ SWNumSpinner.Ob.prototype = {
 (function($){
 	
     $.extend($.fn, {
-        swnumspinner: function(cfg)
+        vwnumspinner: function(cfg)
         {
-        	SWNumSpinner.init(cfg);
+        	VWNumSpinner.getInstance(cfg);
         }
     });
 }(jQuery));

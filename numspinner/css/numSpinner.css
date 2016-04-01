@@ -1,5 +1,8 @@
-.gc_number_spinner
+.vw_number_spinner
 {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	height: 28px;
 	box-sizing:content-box;
 	display: inline-block;
@@ -8,7 +11,7 @@
     vertical-align: top;
 }
 
-.gc_number_spinner .number_show
+.vw_number_spinner .number_show
 {
 	font-size: 12px;
     border: 1px solid #e8e8e8;
@@ -24,10 +27,10 @@
     width: 40px;
 }
 
-.gc_number_spinner .number_spinner_unit
+.vw_number_spinner .number_spinner_unit
 {
 	height: 28px;
-    line-height: 30px;
+    line-height: 28px;
     box-sizing: content-box;
     color: #333;
     font-size: 12px;
@@ -38,7 +41,7 @@
     width: 40px;
 }
 
-.gc_number_spinner .number_spinner_control
+.vw_number_spinner .number_spinner_control
 {
 	height: 28px;
 	box-sizing: content-box;
@@ -48,7 +51,7 @@
     width: 22px;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_up,.number_spinner_down
+.vw_number_spinner .number_spinner_control .number_spinner_up,.number_spinner_down
 {
 	height: 14px;
 	box-sizing: content-box;
@@ -59,7 +62,7 @@
     transition: all 0.3s ease 0s;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_up .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_up .gc-number-arrow
 {	
 	-moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
@@ -76,17 +79,17 @@
     width: 0;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_up:hover .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_up:hover .gc-number-arrow
 {
 	border-color: transparent transparent #404040;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_up.number_spinner_change_disable .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_up.number_spinner_change_disable .gc-number-arrow
 {
 	border-color: transparent transparent #b9b9b9;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_down .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_down .gc-number-arrow
 {
 	-moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
@@ -103,17 +106,17 @@
     width: 0;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_down:hover .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_down:hover .gc-number-arrow
 {
 	border-color: #404040 transparent transparent;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_down.number_spinner_change_disable .gc-number-arrow
+.vw_number_spinner .number_spinner_control .number_spinner_down.number_spinner_change_disable .gc-number-arrow
 {
 	border-color: #b9b9b9 transparent transparent;
 }
 
-.gc_number_spinner .number_spinner_control .number_spinner_change_disable
+.vw_number_spinner .number_spinner_control .number_spinner_change_disable
 {
 	cursor: default;
 }

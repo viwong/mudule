@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
-
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 		<!-- load the numspinner css -->
 		<link href="../css/numSpinner.css" rel="stylesheet">
 
@@ -12,11 +12,13 @@
 
 		<script type="text/javascript">
 			$(function(){
-				var num = $.fn.swnumspinner({
+				var num = $.fn.vwnumspinner({
 					initVal: 1,
-					unit:"¸ö",
+					unit:"å€‹",
 					max: 100,
-					min: 0
+					min: 0,
+					step: 8,
+					containerId: "saas"
 				});
 			});
 			
