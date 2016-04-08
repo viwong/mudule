@@ -8,10 +8,12 @@ var VWNumSpinner = {
 	{
 		var me = this;
 		
+		//根据id获取对象，如果对象存在就返回，反正初始化
 		var el = this.parseSelector(cfg.id||'');
         if (!el || el.length < 1)
         {
             var obj = new this.Ob(cfg || {});
+            obj.el.data("_object",obj);
         	return obj;
         }
         if (el.data('_object'))
@@ -23,7 +25,9 @@ var VWNumSpinner = {
 	},
 	getInstance: function(cfg)
     {
-        var el = this.parseSelector(cfg.id);
+
+    	//根据id获取微调器对象，根据data判断是否已经初始化
+        var el = this.parseSelector(cfg.id || cfg);
         if (el.data('_object'))
         {
             return el.data('_object');
@@ -130,21 +134,22 @@ VWNumSpinner.Ob = function(cfg)
 	var me = this;
 	this.el = null;
 	this.cfg = cfg || {};
-	if(cfg.containerId){
+	if(cfg.containerId)
+	{
 		this.container = VWNumSpinner.parseSelector(cfg.containerId);
 	}	
-	//等默认
-	$.extend(this,cfg);
 
 	this.id = cfg.id || VWNumSpinner.id();
-	if(isNaN(cfg.step)){
-		this.step = 1
-	}else{
+	if(cfg.step && !isNaN(cfg.step)){
 		this.step = cfg.step;
+	}else{
+		this.step = 1;
 	}
 	
+	//渲染页面
 	this.render();
 	
+	//初始化事件
 	this.initEvent();
 	
 	$(function(){
@@ -157,61 +162,57 @@ VWNumSpinner.Ob.prototype = {
 		
 	initEvent: function(){
 
-			var me = this;
-			//点击+1事件
-		    $(".vw_number_spinner .number_spinner_up").on('click',function(){
+		var me = this;
+		//点击+事件
+		$(".vw_number_spinner .number_spinner_up").on('mousedown',function(){
     	
-	    	var e = $(this);    	
-	    	var max = parseInt(e.attr("max"));    	
-	    	var numShow = e.closest('.vw_number_spinner').find(".number_show");    	
-	    	var val = parseInt(numShow.val()) + me.step;
-	    	var down = e.parent().find(".number_spinner_down");
-	    	
-	    	if(e.hasClass("number_spinner_change_disable")){
-	    		return;
-	    	}
-	    	
-	    	if(typeof(max) == "number" && max <= val){
-	    		e.addClass("number_spinner_change_disable");
-	    		val = max;
-	    	}
-	    	
-	    	if(down && down.hasClass("number_spinner_change_disable")){
-	    		down.removeClass("number_spinner_change_disable");
-	    	}
-	    	
-	    	numShow.val(val).trigger("change");
-	    	
+	    	var e = $(this);    
+	    	me.timer = setInterval(function(){
+	    		me.spinnerUp(e);
+	    	}, 100);	
+	    		    	
 	    });
 	    
-	    //点击-1事件
-	    $(".vw_number_spinner .number_spinner_down").on("click",function(){
+	    $(".vw_number_spinner .number_spinner_up").on('mouseup',function(){
+   
+	    	clearInterval(me.timer);
+	    	me.timer = 0;	
+	    		    	
+	    });
+
+	    $(".vw_number_spinner .number_spinner_up").on('mouseout',function(){
+   
+	    	clearInterval(me.timer);
+	    	me.timer = 0;	
+	    		    	
+	    });
+
+	    //点击-事件
+	    $(".vw_number_spinner .number_spinner_down").on("mousedown",function(){
 	    	
-	    	var e = $(this);    	
-	    	var min = parseInt(e.attr("min"));    	
-	    	var numShow = e.closest('.vw_number_spinner').find(".number_show");   	
-	    	var val = parseInt(numShow.val()) - me.step;
-	    	var up = e.parent().find(".number_spinner_up");
+	    	var e = $(this);    
+	    	me.timer = setInterval(function(){
+	    		me.spinnerDown(e);
+	    	}, 100);
 	    	
-	    	if(e.hasClass("number_spinner_change_disable")){
-	    		return;
-	    	}
+	    });
+
+	    $(".vw_number_spinner .number_spinner_down").on("mouseup",function(){
+	    	   
+	    	clearInterval(me.timer);
+	    	me.timer = 0;	
 	    	
-	    	if(typeof(min) == "number" && min >= val){
-	    		e.addClass("number_spinner_change_disable");
-	    		val = min;
-	    	}
-	    	
-	    	if(up && up.hasClass("number_spinner_change_disable")){
-	    		up.removeClass("number_spinner_change_disable");
-	    	}
-	    	
-	    	numShow.val(val).trigger("change");
+	    });
+
+	    $(".vw_number_spinner .number_spinner_down").on("mouseout",function(){
+	    	   
+	    	clearInterval(me.timer);
+	    	me.timer = 0;	
 	    	
 	    });
 	    
 	    //微调器输入框改变事件
-	    $(".vw_number_spinner .number_show").on("change",function(){	    	
+	    $(".vw_number_spinner .number_show").on("change",function(){   	
 	    	var e = $(this);
 	    	var val = parseInt(e.val(),10);
 	    	var max = parseInt(e.parent().find(".number_spinner_up").attr("max"),10);
@@ -251,7 +252,12 @@ VWNumSpinner.Ob.prototype = {
 	            return false;  
 	    }).focus(function() {  
 	        this.style.imeMode='disabled';  
-	    }); 
+	    });
+
+	    $(".vw_number_spinner").on("contextmenu",function(){
+
+	    	return false;
+	    }) ;
 	},
 	render: function(){
 		
@@ -294,6 +300,50 @@ VWNumSpinner.Ob.prototype = {
 
 	    return this;
 
+	},
+	spinnerUp: function(obj){
+		var e = obj;
+		var max = parseInt(e.attr("max"));    	
+    	var numShow = e.closest('.vw_number_spinner').find(".number_show");    	
+    	var val = parseInt(numShow.val()) + this.step;
+    	var down = e.parent().find(".number_spinner_down");
+    	
+    	if(e.hasClass("number_spinner_change_disable")){
+    		return;
+    	}
+    	
+    	if(typeof(max) == "number" && max <= val){
+    		e.addClass("number_spinner_change_disable");
+    		val = max;
+    	}
+    	
+    	if(down && down.hasClass("number_spinner_change_disable")){
+    		down.removeClass("number_spinner_change_disable");
+    	}
+    	
+    	numShow.val(val).trigger("change");
+	},
+	spinnerDown: function(obj){
+		var e = obj;    	
+    	var min = parseInt(e.attr("min"));    	
+    	var numShow = e.closest('.vw_number_spinner').find(".number_show");   	
+    	var val = parseInt(numShow.val()) - this.step;
+    	var up = e.parent().find(".number_spinner_up");
+    	
+    	if(e.hasClass("number_spinner_change_disable")){
+    		return;
+    	}
+    	
+    	if(typeof(min) == "number" && min >= val){
+    		e.addClass("number_spinner_change_disable");
+    		val = min;
+    	}
+    	
+    	if(up && up.hasClass("number_spinner_change_disable")){
+    		up.removeClass("number_spinner_change_disable");
+    	}
+    	
+    	numShow.val(val).trigger("change");
 	}
 };
 

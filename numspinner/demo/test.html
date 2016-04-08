@@ -13,20 +13,30 @@
 		<script type="text/javascript">
 			$(function(){
 				var num = $.fn.vwnumspinner({
+					id: 'test1',
 					initVal: 1,
-					unit:"個",
+					unit:"个",
 					max: 100,
 					min: 0,
-					step: 8,
+					step: 1,
 					containerId: "saas"
 				});
 			});
+
+			var test = function(){
+
+				var obj = VWNumSpinner.getInstance("test1");
+				var ssss = obj;
+
+			};
 			
 		</script>
 	</head>
 
 	<body>
 
-
+		<div>
+			<a onclick="test()" href="javascript:;">点我</a>
+		</div>
 	</body>
 </html>
