@@ -19,7 +19,13 @@
 					max: 100,
 					min: 0,
 					step: 1,
-					containerId: "saas"
+					containerId: "saas",
+					listeners: {
+						"spinup": "spinup",
+						"spindown": "spindown",
+						"change": "change",
+						"finish": "finish"
+					}
 				});
 			});
 
@@ -27,7 +33,22 @@
 
 				var obj = VWNumSpinner.getInstance("test1");
 				var ssss = obj;
+			};
 
+			var spinup = function(obj, val , item){
+				$("input[name='up']").val(val);
+			};
+
+			var spindown = function(obj, val , item){
+				$("input[name='down']").val(val);
+			};
+
+			var change = function(obj, val , item){
+				$("input[name='change']").val(val);
+			};
+
+			var finish = function(obj, val , item){
+				$("input[name='finish']").val(val);
 			};
 			
 		</script>
@@ -37,6 +58,17 @@
 
 		<div>
 			<a onclick="test()" href="javascript:;">点我</a>
+		</div>
+
+		<div>
+			
+			<ul>
+				<li>操作：up --- <input name="up" value='0' /> </li>
+				<li>操作：down --- <input name="down" value='0' /></li>
+				<li>操作：change --- <input name="change" value='0' /></li>
+				<li>操作：finish --- <input name="finish" value='0' /></li>
+				
+			</ul>
 		</div>
 	</body>
 </html>

@@ -153,7 +153,7 @@ VWNumSpinner.Ob = function(cfg)
 	this.initEvent();
 	
 	$(function(){
-		
+		me.initListeners();
 	});
 
 };
@@ -166,7 +166,8 @@ VWNumSpinner.Ob.prototype = {
 		//点击+事件
 		$(".vw_number_spinner .number_spinner_up").on('mousedown',function(){
     	
-	    	var e = $(this);    
+	    	var e = $(this);  
+	    	me.isSpin = true;  
 	    	me.timer = setInterval(function(){
 	    		me.spinnerUp(e);
 	    	}, 100);	
@@ -176,21 +177,30 @@ VWNumSpinner.Ob.prototype = {
 	    $(".vw_number_spinner .number_spinner_up").on('mouseup',function(){
    
 	    	clearInterval(me.timer);
+	    	me.isSpin = false;
 	    	me.timer = 0;	
+	    	var val = $(this).closest('.vw_number_spinner').find(".number_show").val();
+	    	me.trigger('finish', [val, me]);
 	    		    	
 	    });
 
 	    $(".vw_number_spinner .number_spinner_up").on('mouseout',function(){
    
-	    	clearInterval(me.timer);
-	    	me.timer = 0;	
+   			if(me.isSpin){
+		    	clearInterval(me.timer);
+		    	me.isSpin = false;
+		    	me.timer = 0;	
+		    	var val = $(this).closest('.vw_number_spinner').find(".number_show").val();
+		    	me.trigger('finish', [val, me]);
+	    	}
 	    		    	
 	    });
 
 	    //点击-事件
 	    $(".vw_number_spinner .number_spinner_down").on("mousedown",function(){
 	    	
-	    	var e = $(this);    
+	    	var e = $(this);  
+	    	me.isSpin = true;  
 	    	me.timer = setInterval(function(){
 	    		me.spinnerDown(e);
 	    	}, 100);
@@ -200,14 +210,22 @@ VWNumSpinner.Ob.prototype = {
 	    $(".vw_number_spinner .number_spinner_down").on("mouseup",function(){
 	    	   
 	    	clearInterval(me.timer);
+	    	me.isSpin = false;
 	    	me.timer = 0;	
+	    	var val = $(this).closest('.vw_number_spinner').find(".number_show").val();
+	    	me.trigger('finish', [val, me]);
 	    	
 	    });
 
 	    $(".vw_number_spinner .number_spinner_down").on("mouseout",function(){
 	    	   
-	    	clearInterval(me.timer);
-	    	me.timer = 0;	
+	    	if(me.isSpin){
+		    	clearInterval(me.timer);
+		    	me.isSpin = false;
+		    	me.timer = 0;	
+		    	var val = $(this).closest('.vw_number_spinner').find(".number_show").val();
+		    	me.trigger('finish', [val, me]);
+	    	}
 	    	
 	    });
 	    
@@ -215,8 +233,8 @@ VWNumSpinner.Ob.prototype = {
 	    $(".vw_number_spinner .number_show").on("change",function(){   	
 	    	var e = $(this);
 	    	var val = parseInt(e.val(),10);
-	    	var max = parseInt(e.parent().find(".number_spinner_up").attr("max"),10);
-	    	var min = parseInt(e.parent().find(".number_spinner_down").attr("min"),10);
+	    	var max = parseInt(me.cfg.max,10);
+	    	var min = parseInt(me.cfg.min,10);
 	    	
 	    	e.parent().find(".number_spinner_up").removeClass("number_spinner_change_disable");
 	    	e.parent().find(".number_spinner_down").removeClass("number_spinner_change_disable");
@@ -240,6 +258,12 @@ VWNumSpinner.Ob.prototype = {
 	    	}
 	    	
 	    	e.val(val);
+	    	if(me.isSpin){
+	    		me.trigger('change', [val, me]);
+	    	}else{
+	    		me.trigger('finish', [val, me]);
+	    	}
+	    	
 	    	
 	    });
 	    
@@ -259,6 +283,37 @@ VWNumSpinner.Ob.prototype = {
 	    	return false;
 	    }) ;
 	},
+	initListeners: function(){
+
+		var me = this;
+        var cfg = this.cfg;
+        if (cfg && cfg.listeners)
+        {
+            for ( var k in cfg.listeners)
+            {
+                var fn = VWNumSpinner.parsefn(cfg.listeners[k]);
+                if (fn)
+                {
+                    cfg.listeners[k] = fn;
+                    this.on(k, fn);
+                }
+                else
+                {
+                    n = n || 0;
+                    if (n < 3)
+                    {
+                        window.setTimeout(function()
+                        {
+                            me.initListeners(n + 1);
+                        }, 200);
+                        break;
+                    }
+                    else debug('error listener %s', k, 'warn', cfg.listeners[k]);
+                }
+            }
+        }
+        this._init_listenered = true;
+	},
 	render: function(){
 		
 		var me = this;
@@ -274,9 +329,9 @@ VWNumSpinner.Ob.prototype = {
 		
 		var controlEl = $("<div class='number_spinner_control'></div>").appendTo(el);
 		
-		var controlHtml = "<span class='number_spinner_up' max='"+cfg.max+"'>"
+		var controlHtml = "<span class='number_spinner_up'>"
 						+ "<i class='gc-number-arrow' onselectstart='return false;'></i></span>"			
-						+ "<span class='number_spinner_down number_spinner_change_disable' min='"+cfg.min+"'>"		
+						+ "<span class='number_spinner_down number_spinner_change_disable'>"		
 						+ "<i class='gc-number-arrow'></i></span>";
 		
 		controlEl.append(controlHtml);
@@ -302,8 +357,9 @@ VWNumSpinner.Ob.prototype = {
 
 	},
 	spinnerUp: function(obj){
+		var me = this;
 		var e = obj;
-		var max = parseInt(e.attr("max"));    	
+		var max = parseInt(me.cfg.max);    	
     	var numShow = e.closest('.vw_number_spinner').find(".number_show");    	
     	var val = parseInt(numShow.val()) + this.step;
     	var down = e.parent().find(".number_spinner_down");
@@ -322,10 +378,12 @@ VWNumSpinner.Ob.prototype = {
     	}
     	
     	numShow.val(val).trigger("change");
+    	me.trigger('spinup', [val, me]);
 	},
 	spinnerDown: function(obj){
+		var me = this;
 		var e = obj;    	
-    	var min = parseInt(e.attr("min"));    	
+    	var min = parseInt(me.cfg.min);    	
     	var numShow = e.closest('.vw_number_spinner').find(".number_show");   	
     	var val = parseInt(numShow.val()) - this.step;
     	var up = e.parent().find(".number_spinner_up");
@@ -344,7 +402,18 @@ VWNumSpinner.Ob.prototype = {
     	}
     	
     	numShow.val(val).trigger("change");
-	}
+    	me.trigger('spindown' , [val , me]);
+	},
+	on: function(ev, fn)
+    {
+        this.el.on('viw-' + ev, fn);
+        return this;
+    },
+    trigger: function(ev, args)
+    {
+        this.el.trigger('viw-' + ev, args);
+        return this;
+    }
 };
 
 
